@@ -174,9 +174,11 @@ The tool supports various categories for credential recovery:
 ### Example: Live RAM Parsing
 
 - Retrieves passwords of users stored in memory.
+
 ![Image](https://github.com/Laaaibah/MemSieve/blob/main/usercred.png)
 
 - Extracts saved passwords from applications like Firefox and Thunderbird (mail client).
+
 ![Image](https://github.com/Laaaibah/MemSieve/blob/main/firefox.png)
 
 ### Example: Pamspy
