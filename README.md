@@ -71,8 +71,8 @@ sudo systemctl status ssh
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/your-repo/password-parser.git
-cd password-parser
+git clone https://github.com/Laaaibah/MemSieve.git
+cd MemSieve
 ```
 
 ---
