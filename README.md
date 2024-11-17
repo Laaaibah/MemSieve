@@ -1,23 +1,42 @@
-
 # MemSieve (password parser -pwd dictionary from RAM)
 
 ## Overview
 
-**MemSieve** is a powerful forensic tool designed to extract credentials from memory dumps, live system RAM, and system configurations. Leveraging tools like Project.py and PAMSpy, it supports credential recovery from browsers, email clients, memory, and more. Built for ethical forensic investigations, this tool provides a wide range of utilities and customizable outputs to aid in cybersecurity and digital forensics.
+_MemSieve_ is a powerful forensic tool designed to extract credentials from memory dumps, live system RAM, and system configurations. Leveraging tools like Project.py and PAMSpy, it supports credential recovery from browsers, email clients, memory, and more. Built for ethical forensic investigations, this tool provides a wide range of utilities and customizable outputs to aid in cybersecurity and digital forensics.
+
+---
+
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Key Features](#key-features)
+3. [Prerequisites and Dependencies](#prerequisites-and-dependencies)
+   - [System Requirements](#system-requirements)
+   - [Python Requirements](#python-requirements)
+   - [External Libraries and Tools](#external-libraries-and-tools)
+4. [Installation and Setup](#installation-and-setup)
+   - [Clone the Repository](#clone-the-repository)
+5. [Usage](#usage)
+   - [Menu Options](#menu-options)
+6. [PID Integration for Memory Analysis](#pid-integration-for-memory-analysis)
+   - [Purpose](#purpose)
+   - [PID Use Cases and Relevant Files](#pid-use-cases-and-relevant-files)
+7. [Supported Categories](#supported-categories)
+8. [Output Examples](#output-examples)
+   - [Analyzing Memory Dump](#example-analyzing-memory-dump)
+   - [Live RAM Parsing](#example-live-ram-parsing)
+   - [Pamspy](#example-pamspy)
+9. [Legal Disclaimer](#legal-disclaimer)
 
 ---
 
 ## Key Features
 
-- **Memory Dump Analysis**: Extract passwords and sensitive data from pre-collected memory dumps.
-- **Live RAM Parsing**: Real-time extraction of sensitive data from running processes using PID-based analysis.
-- **PAM Credential Dumping**: Capture authentication secrets during login attempts using eBPF-based hooks.
-- **Customizable Output**: Provides results in readable text, JSON, and structured formats.
-- **Cross-Category Support**: Recover credentials from browsers, email clients, and system memory.
-
----
-
-## Table of Contents
+- _Memory Dump Analysis_: Extract passwords and sensitive data from pre-collected memory dumps.
+- _Live RAM Parsing_: Real-time extraction of sensitive data from running processes using PID-based analysis.
+- _PAM Credential Dumping_: Capture authentication secrets during login attempts using eBPF-based hooks.
+- _Customizable Output_: Provides results in readable text, JSON, and structured formats.
+- _Cross-Category Support_: Recover credentials from browsers, email clients, and system memory.
 
 ---
 
@@ -25,8 +44,8 @@
 
 ### System Requirements
 
-- **Operating System**: Linux (Tested on Kali Linux)
-- **Root Access**: Required for PAMSpy and some RAMParser functionalities.
+- _Operating System_: Linux (Tested on Kali Linux)
+- _Root Access_: Required for PAMSpy and some RAMParser functionalities.
 
 ### Python Requirements
 
@@ -40,29 +59,29 @@ pip2 install -r requirements.txt
 
 ### External Libraries and Tools
 
-Run the commands below to setup volatility and python2
+Run the commands below to setup volatility and python2:
 
 ```bash
 sudo apt install -y build-essential git libdistorm3-dev yara libraw1394-11 libcapstone-dev capstone-tool tzdata
-sudo apt install -y python2 python2.7-dev libpython2-dev 
-curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py 
-sudo python2 get-pip.py 
+sudo apt install -y python2 python2.7-dev libpython2-dev
+curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
+sudo python2 get-pip.py
 sudo python2 -m pip install -U setuptools wheel
-python2 -m pip install -U distorm3 yara pycrypto pillow openpyxl ujson pytz ipython capstone 
-sudo python2 -m pip install yara 
+python2 -m pip install -U distorm3 yara pycrypto pillow openpyxl ujson pytz ipython capstone
+sudo python2 -m pip install yara
 sudo ln -s /usr/local/lib/python2.7/dist-packages/usr/lib/libyara.so /usr/lib/libyara.so
 git clone https://github.com/volatilityfoundation/volatility.git
 cd volatility
 sudo python2 setup.py install
 ```
-For pamspy module
+
+For PAMSpy module:
+
 ```bash
 openssh-server
 sudo systemctl enable --now ssh
 sudo systemctl status ssh
 ```
-
-
 
 ---
 
@@ -88,14 +107,12 @@ g++ -o project project.cpp
 
 ### Menu Options
 
-1. **Memory Dump Analysis**:
-   - Navigates to `dump.sh`.
-2. **Live RAM Analysis**:
-   - Navigates to `RAMparser`.
-3. **PAMSpy**:
-   - Navigates to `pam.sh`.
-
----
+1. _Memory Dump Analysis_:
+   - Navigates to dump.sh.
+2. _Live RAM Analysis_:
+   - Navigates to RAMparser.
+3. _PAMSpy_:
+   - Navigates to pam.sh.
 
 ---
 
@@ -107,32 +124,32 @@ PID (Process ID) is critical for memory analysis, enabling the tool to target sp
 
 ### PID Use Cases and Relevant Files
 
-1. **PID Identification**:
+1. _PID Identification_:
 
-   - **Files/Modules**: `MEMORYDUMP.py`, `MIMIPY.py`, `homes.py`
-   - Scans active processes to identify targets such as browsers (`firefox`, `chrome`, `chromium`) and system components (`gnome-keyring-daemon`, `lightdm`).
-   - Uses commands like `pslist` to retrieve running process details.
+   - _Files/Modules_: MEMORYDUMP.py, MIMIPY.py, homes.py
+   - Scans active processes to identify targets such as browsers (firefox, chrome, chromium) and system components (gnome-keyring-daemon, lightdm).
+   - Uses commands like pslist to retrieve running process details.
 
-2. **Memory Dump with PID**:
+2. _Memory Dump with PID_:
 
-   - **Files/Modules**: `MEMORYDUMP.py`, `MIMIPY.py`, `homes.py`
-   - Dumps memory of identified processes using tools like `memdump`.
+   - _Files/Modules_: MEMORYDUMP.py, MIMIPY.py, homes.py
+   - Dumps memory of identified processes using tools like memdump.
    - Dumps are analyzed for credentials with regex patterns targeting usernames and passwords.
 
-3. **Process Memory Scanning**:
+3. _Process Memory Scanning_:
 
-   - **Files/Modules**: `MEMORYDUMP.py`, `MIMIPY.py`
-   - The `MemWorker` class interacts with memory regions of processes identified by their PIDs.
+   - _Files/Modules_: MEMORYDUMP.py, MIMIPY.py
+   - The MemWorker class interacts with memory regions of processes identified by their PIDs.
    - Searches for sensitive strings like plaintext credentials in browser or session memory.
 
-4. **Retrieving Process Environment Variables**:
+4. _Retrieving Process Environment Variables_:
 
-   - **Files/Modules**: `homes.py`
-   - Uses the `get_linux_env()` function to fetch environment variables of specific processes by accessing `/proc/<pid>/environ`.
+   - _Files/Modules_: homes.py
+   - Uses the get_linux_env() function to fetch environment variables of specific processes by accessing `/proc/<pid>/environ`.
    - This is particularly useful for analyzing session-specific data and configurations.
 
-5. **Memory Analysis with PID**:
-   - **Files/Modules**: `MEMORYDUMP.py`, `MIMIPY.py`
+5. _Memory Analysis with PID_:
+   - _Files/Modules_: MEMORYDUMP.py, MIMIPY.py
    - Matches known markers near credentials in memory, validating sensitive data like login prompts or SSH sessions.
 
 ---
@@ -141,10 +158,10 @@ PID (Process ID) is critical for memory analysis, enabling the tool to target sp
 
 The tool supports various categories for credential recovery:
 
-- **Browsers**: Extract saved passwords from Firefox.
-- **Email Clients**: Retrieve email credentials from Thunderbird.
-- **Memory Dumps**: Extract credentials directly from memory dumps.
-- **System Memory**: Analyze running processes for sensitive information.
+- _Browsers_: Extract saved passwords from Firefox.
+- _Email Clients_: Retrieve email credentials from Thunderbird.
+- _Memory Dumps_: Extract credentials directly from memory dumps.
+- _System Memory_: Analyze running processes for sensitive information.
 
 ---
 
@@ -157,12 +174,10 @@ The tool supports various categories for credential recovery:
 ### Example: Live RAM Parsing
 
 - Retrieves passwords of users stored in memory.
-![Image](https://github.com/Laaaibah/MemSieve/blob/main/usercred.png)
+  ![Image](https://github.com/Laaaibah/MemSieve/blob/main/usercred.png)
 
 - Extracts saved passwords from applications like Firefox and Thunderbird (mail client).
-![Image](https://github.com/Laaaibah/MemSieve/blob/main/firefox.png)
-
-
+  ![Image](https://github.com/Laaaibah/MemSieve/blob/main/firefox.png)
 
 ### Example: Pamspy
 
@@ -173,5 +188,3 @@ The tool supports various categories for credential recovery:
 ## Legal Disclaimer
 
 This tool is intended for ethical and legal use only. Unauthorized usage of this tool may violate applicable laws and is strictly prohibited.
-
----
