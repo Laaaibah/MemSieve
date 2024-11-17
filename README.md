@@ -1,4 +1,4 @@
-# MemSieve (password parser -pwd dictionary from RAM)
+# MemSieve (password parser - pwd dictionary from RAM)
 
 ## Overview
 
