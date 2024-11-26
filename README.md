@@ -126,33 +126,22 @@ PID (Process ID) is critical for memory analysis, enabling the tool to target sp
 
 ### PID Use Cases and Relevant Files
 
-1. _PID Identification_:
+1. _homes.py_:
 
-   - _Files/Modules_: MEMORYDUMP.py, MIMIPY.py, homes.py
-   - Scans active processes to identify targets such as browsers (firefox, chrome, chromium) and system components (gnome-keyring-daemon, lightdm).
-   - Uses commands like pslist to retrieve running process details.
+   - Checks read access to /etc/shadow to extract user credentials securely.
+   
 
-2. _Memory Dump with PID_:
+2. _write_output.py_:
 
-   - _Files/Modules_: MEMORYDUMP.py, MIMIPY.py, homes.py
-   - Dumps memory of identified processes using tools like memdump.
-   - Dumps are analyzed for credentials with regex patterns targeting usernames and passwords.
+   - Saves extracted data into a text file for further analysis and use.
+   - Prints the retrieved data on console
+     
+3. _memorydump.py_:
 
-3. _Process Memory Scanning_:
-
-   - _Files/Modules_: MEMORYDUMP.py, MIMIPY.py
+   - Utilizes PIDs to identify processes (e.g., browsers) likely to contain sensitive data.
    - The MemWorker class interacts with memory regions of processes identified by their PIDs.
-   - Searches for sensitive strings like plaintext credentials in browser or session memory.
+   - Searches memory dumps for credential patterns using predefined regex expressions.
 
-4. _Retrieving Process Environment Variables_:
-
-   - _Files/Modules_: homes.py
-   - Uses the get_linux_env() function to fetch environment variables of specific processes by accessing `/proc/<pid>/environ`.
-   - This is particularly useful for analyzing session-specific data and configurations.
-
-5. _Memory Analysis with PID_:
-   - _Files/Modules_: MEMORYDUMP.py, MIMIPY.py
-   - Matches known markers near credentials in memory, validating sensitive data like login prompts or SSH sessions.
 
 ---
 
