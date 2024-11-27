@@ -110,9 +110,9 @@ g++ -o project project.cpp
 ### Menu Options
 
 1. _Memory Dump Analysis_:
-   - Navigates to dump.sh.
+   - Navigates to newest.sh.
 2. _Live RAM Analysis_:
-   - Navigates to RAMparser.
+   - Navigates to project.py.
 3. _PAMSpy_:
    - Navigates to pam.sh.
 
