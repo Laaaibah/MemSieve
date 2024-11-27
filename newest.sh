@@ -34,8 +34,8 @@ PROCESSES=("lsass.exe" "chrome.exe" "svchost.exe")  # Processes to search for
 
 # Function to wait for a minimum of 5 seconds
 function wait_for_completion() {
-    echo -e "${BOLD}${YELLOW}Waiting for 5 seconds...${RESET}"
-    sleep 5
+    echo -e "${BOLD}${YELLOW}Waiting for 10 seconds...${RESET}"
+    sleep 10
 }
 
 # Section 0: Run hashdump and lsadump commands
@@ -132,85 +132,75 @@ fi
 wait_for_completion  # Wait for 5 seconds minimum
 display_header  # Clear screen and show header
 
-# Section 6: Dump registry
-echo -e "${BOLD}${YELLOW}Step 6: Dumping registry...${RESET}"
-python2 vol.py -f $MEMORY_DUMP --profile=$PROFILE dumpregistry --dump-dir=$REGISTRY_DIR
+# Section 6: Dump SAM registry only
+echo -e "${BOLD}${YELLOW}Step 6: Dumping SAM registry...${RESET}"
+# Dump only the SAM registry hive
+python2 vol.py -f $MEMORY_DUMP --profile=$PROFILE dumpregistry --dump-dir=$REGISTRY_DIR --dump-hive SAM
 wait_for_completion  # Wait for 5 seconds minimum
 display_header  # Clear screen and show header
 
-# Section 7: Extract strings from registry files
-echo -e "${BOLD}${YELLOW}Step 7: Extracting strings from registry files...${RESET}"
-> "$OUTPUT_FILE"
-registry_files=("$REGISTRY_DIR"/*.reg)
 
-for registry_file in "${registry_files[@]}"; do
-    if [[ -f "$registry_file" ]]; then
-        strings "$registry_file" >> "$OUTPUT_FILE"
-        echo -e "${BLUE}Extracted strings from $registry_file.${RESET}"
-    else
-        echo -e "${RED}Registry file $registry_file does not exist.${RESET}"
-    fi
-done
+# Section 7: Extracting strings from SAM registry file only...
+echo -e "${BOLD}${YELLOW}Step 7: Extracting strings from SAM registry file...${RESET}"
+> "$OUTPUT_FILE"  # Clear the output file before writing
+
+# Only extract strings from the SAM registry file
+sam_registry_file="$REGISTRY_DIR/registry.0xfffff8a0016d4010.SAM.reg"
+if [[ -f "$sam_registry_file" ]]; then
+    strings "$sam_registry_file" >> "$OUTPUT_FILE"
+    echo -e "${BLUE}Extracted strings from $sam_registry_file.${RESET}"
+else
+    echo -e "${RED}SAM registry file $sam_registry_file does not exist.${RESET}"
+fi
+
 wait_for_completion  # Wait for 5 seconds minimum
 display_header  # Clear screen and show header
 
-# Section 8: Search for sensitive keywords in registry dumps
-echo -e "${BOLD}${YELLOW}Step 8: Searching for sensitive keywords in registry strings...${RESET}"
+
+# Section 8: Searching for sensitive keywords in SAM registry strings...
+echo -e "${BOLD}${YELLOW}Step 8: Searching for sensitive keywords in SAM registry strings...${RESET}"
+
+# Search for sensitive keywords only in the extracted strings from the SAM registry
 grep -iE 'username|password' "$OUTPUT_FILE" >> "$FOUND_FILE_2"
+
 wait_for_completion  # Wait for 5 seconds minimum
 display_header  # Clear screen and show header
 
 echo -e "${BOLD}${GREEN}All tasks completed. Results saved in $FOUND_FILE_2.${RESET}"
 
-# Section 9: Ask the user if they want to view a registry file
-echo -e "${BOLD}${YELLOW}Step 9: View a registry file?${RESET}"
-echo -e "Do you want to view a registry file? (y/n)"
+# Section 9: Ask the user if they want to view the SAM registry file
+echo -e "${BOLD}${YELLOW}Step 9: View the SAM registry file?${RESET}"
+echo -e "Do you want to view the SAM registry file? (y/n)"
 read view_choice
 
-# If the user chooses yes, ask for the file to view
+# If the user chooses yes, proceed to view the SAM file
 if [[ "$view_choice" == "y" || "$view_choice" == "Y" ]]; then
-    echo -e "${BOLD}${BLUE}Choose a registry file to view from the list below:${RESET}"
-    echo "registry.0xfffff8a000053320.HARDWARE.reg"
-    echo "registry.0xfffff8a00000f010.no_name.reg"
-    echo "registry.0xfffff8a000109410.SECURITY.reg"
-    echo "registry.0xfffff8a00175b010.NTUSERDAT.reg"
-    echo "registry.0xfffff8a000024010.SYSTEM.reg"
-    echo "registry.0xfffff8a0005d5010.SOFTWARE.reg"
-    echo "registry.0xfffff8a0020ad410.UsrClassdat.reg"
+    echo -e "${BOLD}${BLUE}You have selected the SAM registry file to view:${RESET}"
     echo "registry.0xfffff8a0016d4010.SAM.reg"
-    echo "registry.0xfffff8a00176e410.NTUSERDAT.reg"
-    echo "registry.0xfffff8a002090010.ntuserdat.reg"
-    echo -n "Enter the registry file name: "
-    read registry_file
 
-    # Check if the file exists
-    if [[ -f "$REGISTRY_DIR/$registry_file" ]]; then
-        # Ask the user if they want to view the file in hex or human-readable format
-        echo -e "${BOLD}${BLUE}How would you like to view the file?${RESET}"
-        echo "1. Hex format"
-        echo "2. Human-readable format"
-        echo -n "Enter 1 for Hex or 2 for Human-readable: "
-        read format_choice
+    # Ask the user if they want to view the file in hex or human-readable format
+    echo -e "${BOLD}${BLUE}How would you like to view the SAM registry file?${RESET}"
+    echo "1. Hex format"
+    echo "2. Human-readable format"
+    echo -n "Enter 1 for Hex or 2 for Human-readable: "
+    read format_choice
 
-        if [[ "$format_choice" == "1" ]]; then
-            # Show the hex dump in human-readable format using xxd with 'less'
-            echo -e "${BOLD}${BLUE}Hex dump of $registry_file:${RESET}"
-            xxd -g 1 -c 32 "$REGISTRY_DIR/$registry_file" | less
-        elif [[ "$format_choice" == "2" ]]; then
-            # Show the human-readable strings using the 'strings' command
-            echo -e "${BOLD}${BLUE}Human-readable strings from $registry_file:${RESET}"
-            strings "$REGISTRY_DIR/$registry_file" | less
-        else
-            echo -e "${RED}Invalid choice. Exiting.${RESET}"
-            exit 1
-        fi
+    if [[ "$format_choice" == "1" ]]; then
+        # Show the hex dump using xxd
+        echo -e "${BOLD}${BLUE}Hex dump of SAM registry file:${RESET}"
+        xxd -g 1 -c 32 "$REGISTRY_DIR/registry.0xfffff8a0016d4010.SAM.reg" | less
+    elif [[ "$format_choice" == "2" ]]; then
+        # Show human-readable strings using the 'strings' command
+        echo -e "${BOLD}${BLUE}Human-readable strings from SAM registry file:${RESET}"
+        strings "$REGISTRY_DIR/registry.0xfffff8a0016d4010.SAM.reg" | less
     else
-        echo -e "${RED}Error: The file does not exist or was typed incorrectly.${RESET}"
+        echo -e "${RED}Invalid choice. Exiting.${RESET}"
+        exit 1
     fi
 
 # If the user chooses no, exit the script
 elif [[ "$view_choice" == "n" || "$view_choice" == "N" ]]; then
-    echo -e "${GREEN}You chose not to view the registry file. Exiting.${RESET}"
+    echo -e "${GREEN}You chose not to view the SAM registry file. Exiting.${RESET}"
     exit 0
 
 # If the user input is invalid
@@ -218,4 +208,3 @@ else
     echo -e "${RED}Invalid choice. Exiting.${RESET}"
     exit 1
 fi
-
